@@ -1,13 +1,11 @@
 import {useEffect, useRef, useState} from 'react';
-import logo from './assets/images/logo-universal.png';
-import './App.css';
+import style from './App.module.css';
 import { GetLatestClips, GetClipsAfter, HideApplication } from "../wailsjs/go/main/App";
 
 function App() {
     const [clips, setClips] = useState([]);
     const lastTsRef = useRef('');
 
-    // Buscar a hora atual quando o componente carregar
     useEffect(() => {
         GetLatestClips(0, 10).then(result => {
             setClips(result);
@@ -17,7 +15,6 @@ function App() {
         });
 
         const clipInterval = setInterval(() => {
-            console.log('Checking for new clips after', lastTsRef.current);
             if (!lastTsRef.current) {
                 return;
             }
@@ -41,17 +38,22 @@ function App() {
         }
     }, [])
 
+    const copyText = (text) => () => {
+        navigator.clipboard.writeText(text).then(() => {
+            HideApplication();
+        });
+    }
+
     return (
-        <div id="App">
-            <div className="time-section">
-                
+        <div id="app">
+            <div className={style["time-section"]}>
                 {clips.length > 0 && (
-                    <div className="clips-section">
-                        <h2>Clips Recentes</h2>
+                    <div className={style["clips-section"]}>
                         <ul>
                             {clips.map((clip, index) => (
-                                <li key={index}>
-                                    <strong>{new Date(clip.TSISO).toLocaleString()}:</strong> {clip.Content}
+                                <li key={index} onClick={copyText(clip.Content)}>
+                                    <div className={style["content"]}>{clip.Content}</div>
+                                    <strong className={style["date"]}>{new Date(clip.TSISO).toLocaleString()}</strong>
                                 </li>
                             ))}
                         </ul>
