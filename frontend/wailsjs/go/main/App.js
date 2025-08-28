@@ -22,6 +22,10 @@ export function HideApplication() {
   return window['go']['main']['App']['HideApplication']();
 }
 
+export function PreventCopyText(arg1) {
+  return window['go']['main']['App']['PreventCopyText'](arg1);
+}
+
 export function RemoveClip(arg1) {
   return window['go']['main']['App']['RemoveClip'](arg1);
 }
