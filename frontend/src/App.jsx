@@ -1,29 +1,37 @@
-import {useEffect, useState} from 'react';
+import {useEffect, useRef, useState} from 'react';
 import logo from './assets/images/logo-universal.png';
 import './App.css';
-import { GetClipboarText, GetLatestClips } from "../wailsjs/go/main/App";
+import { GetLatestClips, GetClipsAfter } from "../wailsjs/go/main/App";
 
 function App() {
-    const [currentTime, setCurrentTime] = useState('');
     const [clips, setClips] = useState([]);
-    
-    const updateCurrentTime = (time) => setCurrentTime(time);
-
-    function getTimeFromGo() {
-        GetClipboarText().then(updateCurrentTime);
-    }
+    const lastTsRef = useRef('');
 
     // Buscar a hora atual quando o componente carregar
     useEffect(() => {
-        setInterval(() => {
-            getTimeFromGo();
-        }, 1000)
+        GetLatestClips(0, 10).then(result => {
+            setClips(result);
+            if (result.length > 0) {
+                lastTsRef.current = result[0].TSISO;
+            }
+        });
 
-        setInterval(() => {
-            GetLatestClips(0, 10).then(clips => {
-                setClips(clips)
+        const clipInterval = setInterval(() => {
+            console.log('Checking for new clips after', lastTsRef.current);
+            if (!lastTsRef.current) {
+                return;
+            }
+            GetClipsAfter(lastTsRef.current).then(newClips => {
+                if (newClips.length > 0) {
+                    setClips(prev => [...newClips, ...prev]);
+                    lastTsRef.current = newClips[0].TSISO;
+                }
             });
-        }, 1000)
+        }, 1000);
+
+        return () => {
+            clearInterval(clipInterval);
+        };
     }, []);
 
     return (
@@ -31,7 +39,6 @@ function App() {
             <img src={logo} id="logo" alt="logo"/>
             
             <div className="time-section">
-                <div className="time-display">{currentTime}</div>
                 
                 {clips.length > 0 && (
                     <div className="clips-section">
@@ -39,7 +46,7 @@ function App() {
                         <ul>
                             {clips.map((clip, index) => (
                                 <li key={index}>
-                                    <strong>{new Date(clip.TsIso).toLocaleString()}:</strong> {clip.Content}
+                                    <strong>{new Date(clip.TSISO).toLocaleString()}:</strong> {clip.Content}
                                 </li>
                             ))}
                         </ul>

@@ -4,6 +4,8 @@ import {main} from '../models';
 
 export function GetClipboarText():Promise<string>;
 
+export function GetClipsAfter(arg1:string):Promise<Array<main.Clip>>;
+
 export function GetCurrentTime():Promise<string>;
 
 export function GetLatestClips(arg1:number,arg2:number):Promise<Array<main.Clip>>;

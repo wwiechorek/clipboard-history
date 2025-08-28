@@ -71,10 +71,33 @@ type Clip struct {
 
 func (s *Store) Latest(sk, n int) ([]Clip, error) {
 	rows, err := s.DB.Query(`
-		SELECT id, ts_iso, content
-		FROM clips
-		ORDER BY ts_iso DESC
-		LIMIT ?, ?`, sk, n)
+                SELECT id, ts_iso, content
+                FROM clips
+                ORDER BY ts_iso DESC
+                LIMIT ?, ?`, sk, n)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var out []Clip
+	for rows.Next() {
+		var c Clip
+		if err := rows.Scan(&c.ID, &c.TSISO, &c.Content); err != nil {
+			return nil, err
+		}
+		out = append(out, c)
+	}
+	return out, rows.Err()
+}
+
+// Buscar clips após um timestamp específico
+func (s *Store) After(ts string) ([]Clip, error) {
+	rows, err := s.DB.Query(`
+                SELECT id, ts_iso, content
+                FROM clips
+                WHERE ts_iso > ?
+                ORDER BY ts_iso DESC`, ts)
 	if err != nil {
 		return nil, err
 	}

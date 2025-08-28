@@ -6,6 +6,10 @@ export function GetClipboarText() {
   return window['go']['main']['App']['GetClipboarText']();
 }
 
+export function GetClipsAfter(arg1) {
+  return window['go']['main']['App']['GetClipsAfter'](arg1);
+}
+
 export function GetCurrentTime() {
   return window['go']['main']['App']['GetCurrentTime']();
 }

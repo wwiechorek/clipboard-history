@@ -89,3 +89,7 @@ func (a *App) RemoveClip(id int64) error {
 func (a *App) GetLatestClips(skip, n int) ([]Clip, error) {
 	return store.Latest(skip, n)
 }
+
+func (a *App) GetClipsAfter(ts string) ([]Clip, error) {
+	return store.After(ts)
+}
