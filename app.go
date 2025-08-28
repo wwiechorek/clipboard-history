@@ -7,6 +7,11 @@ import (
 	"time"
 
 	"github.com/atotto/clipboard"
+	"github.com/wailsapp/wails/v2/pkg/menu"
+	"github.com/wailsapp/wails/v2/pkg/menu/keys"
+	wailsRuntime "github.com/wailsapp/wails/v2/pkg/runtime"
+
+	"golang.design/x/hotkey"
 )
 
 // App struct
@@ -30,10 +35,45 @@ func NewApp() *App {
 	return &App{}
 }
 
+var icon []byte
+
 // startup is called when the app starts. The context is saved
 // so we can call the runtime methods
 func (a *App) startup(ctx context.Context) {
+
 	a.ctx = ctx
+
+	go hotKeyListener(a.ctx)
+	// wailsRuntime.WindowSetPosition(a.ctx, 100, 100)
+
+	trayMenu := menu.NewMenu()
+	trayMenu.Append(menu.Text("Abrir janela", keys.CmdOrCtrl("O"), func(_ *menu.CallbackData) {
+		wailsRuntime.WindowShow(ctx)
+	}))
+	trayMenu.Append(menu.Separator())
+	trayMenu.Append(menu.Text("Sair", keys.CmdOrCtrl("Q"), func(_ *menu.CallbackData) {
+		wailsRuntime.Quit(ctx)
+	}))
+
+	applyAccessoryPolicy()
+}
+
+func hotKeyListener(ctx context.Context) {
+	hk := hotkey.New([]hotkey.Modifier{hotkey.ModCtrl}, hotkey.KeyV)
+
+	err := hk.Register()
+	if err != nil {
+		panic(err)
+	}
+
+	for {
+		<-hk.Keydown()
+		wailsRuntime.WindowShow(ctx)
+
+		time.Sleep(1 * time.Millisecond)
+		CenterWindowOnMouseMonitor(ctx)
+		// wailsRuntime.WindowSetPosition(ctx, 100, 100)
+	}
 }
 
 // GetCurrentTime returns the current time as a formatted string
@@ -92,4 +132,8 @@ func (a *App) GetLatestClips(skip, n int) ([]Clip, error) {
 
 func (a *App) GetClipsAfter(ts string) ([]Clip, error) {
 	return store.After(ts)
+}
+
+func (a *App) HideApplication() {
+	wailsRuntime.WindowHide(a.ctx)
 }

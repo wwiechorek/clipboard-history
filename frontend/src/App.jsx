@@ -1,7 +1,7 @@
 import {useEffect, useRef, useState} from 'react';
 import logo from './assets/images/logo-universal.png';
 import './App.css';
-import { GetLatestClips, GetClipsAfter } from "../wailsjs/go/main/App";
+import { GetLatestClips, GetClipsAfter, HideApplication } from "../wailsjs/go/main/App";
 
 function App() {
     const [clips, setClips] = useState([]);
@@ -34,10 +34,15 @@ function App() {
         };
     }, []);
 
+    useEffect(() => {
+        window.addEventListener('blur', HideApplication);
+        return () => {
+            window.removeEventListener('blur', HideApplication);
+        }
+    }, [])
+
     return (
         <div id="App">
-            <img src={logo} id="logo" alt="logo"/>
-            
             <div className="time-section">
                 
                 {clips.length > 0 && (

@@ -10,6 +10,8 @@ export function GetCurrentTime():Promise<string>;
 
 export function GetLatestClips(arg1:number,arg2:number):Promise<Array<main.Clip>>;
 
+export function HideApplication():Promise<void>;
+
 export function RemoveClip(arg1:number):Promise<void>;
 
 export function SaveClip(arg1:string):Promise<number>;

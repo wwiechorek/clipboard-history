@@ -17,13 +17,16 @@ func main() {
 
 	// Create application with options
 	err := wails.Run(&options.App{
-		Title:  "cliplog",
-		Width:  1024,
-		Height: 768,
+		Title:       "cliplog",
+		Width:       300,
+		Height:      600,
+		AlwaysOnTop: false,
+		Frameless:   true,
+		StartHidden: true,
 		AssetServer: &assetserver.Options{
 			Assets: assets,
 		},
-		BackgroundColour: &options.RGBA{R: 27, G: 38, B: 54, A: 1},
+		BackgroundColour: &options.RGBA{R: 27, G: 38, B: 54, A: 0},
 		OnStartup:        app.startup,
 		Bind: []interface{}{
 			app,

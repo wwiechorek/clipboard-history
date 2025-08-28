@@ -18,6 +18,10 @@ export function GetLatestClips(arg1, arg2) {
   return window['go']['main']['App']['GetLatestClips'](arg1, arg2);
 }
 
+export function HideApplication() {
+  return window['go']['main']['App']['HideApplication']();
+}
+
 export function RemoveClip(arg1) {
   return window['go']['main']['App']['RemoveClip'](arg1);
 }
