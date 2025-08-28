@@ -1,6 +1,6 @@
 import {useEffect, useRef, useState} from 'react';
 import style from './App.module.css';
-import { GetLatestClips, GetClipsAfter, HideApplication } from "../wailsjs/go/main/App";
+import { GetLatestClips, GetClipsAfter, HideApplication, PreventCopyText } from "../wailsjs/go/main/App";
 
 function App() {
     const [clips, setClips] = useState([]);
@@ -39,6 +39,7 @@ function App() {
     }, [])
 
     const copyText = (text) => () => {
+        PreventCopyText(text);
         navigator.clipboard.writeText(text).then(() => {
             HideApplication();
         });

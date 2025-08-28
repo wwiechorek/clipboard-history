@@ -137,3 +137,7 @@ func (a *App) GetClipsAfter(ts string) ([]Clip, error) {
 func (a *App) HideApplication() {
 	wailsRuntime.WindowHide(a.ctx)
 }
+
+func (a *App) PreventCopyText(text string) {
+	lastClipboardText = text
+}
